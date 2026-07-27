@@ -1,16 +1,9 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-     
-     
-    </>
-  )
+    <div className="flex h-screen items-center justify-center">
+      <h1 className="text-4xl font-bold text-blue-600">
+        Tailwind CSS is working!
+      </h1>
+    </div>
+  );
 }
-
-export default App
