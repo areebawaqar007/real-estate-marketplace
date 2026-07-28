@@ -4,9 +4,8 @@ import connectDB from "./config/database.js";
 import app from "./app.js";
 // Load env variables
 dotenv.config({
-  path: "./.env",
+  path: "./server/.env",
 });
-
 const startServer = async () => {
   try {
     await connectDB();

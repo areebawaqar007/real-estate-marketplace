@@ -1,13 +1,10 @@
 
 import express from "express";
-
+import userRouter from './routes/user.route.js';
 const app = express();
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Server is working");
-});
-
+app.use('/api/user', userRouter);
 
 export default app;
