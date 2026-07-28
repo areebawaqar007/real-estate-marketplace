@@ -1,0 +1,21 @@
+{
+  "name": "real-estate-marketplace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/src/index.js",
+    "dev": "nodemon server/src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/areebawaqar007/real-estate-marketplace.git"
+  },
+  "author": "Areeba Waqar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/areebawaqar007/real-estate-marketplace/issues"
+  },
+  "homepage": "https://github.com/areebawaqar007/real-estate-marketplace#readme"
+}
