@@ -1,0 +1,21 @@
+[33mb8cf25b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m01b3832[m HEAD@{1}: commit: complete profile UI page
+[33mb8cf25b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{2}: commit: Add Google OAuth functionality
+[33m08058f1[m HEAD@{3}: commit: Add redux persisi
+[33m2496495[m HEAD@{4}: commit: Add redux toolkit
+[33mc87f7e8[m HEAD@{5}: commit: add redux store
+[33m6639a37[m HEAD@{6}: commit: complete sign in functionality
+[33ma36ea8a[m HEAD@{7}: commit: create sign in api
+[33ma6d08ae[m HEAD@{8}: commit: complete sign up functionality
+[33md5780db[m HEAD@{9}: commit: complete sign up page ui
+[33m72ebbf6[m HEAD@{10}: commit: create middleware fun to handle errors
+[33m57a7d93[m HEAD@{11}: commit: Create user model
+[33m4174679[m HEAD@{12}: commit: minor change
+[33m046103e[m HEAD@{13}: commit: api route testing
+[33mbd4ecc3[m HEAD@{14}: commit: move gitignore to the root and fix folder structure
+[33ma4454ee[m HEAD@{15}: commit: Remove node_modules from repository
+[33md6c9858[m HEAD@{16}: commit: moved
+[33m15adda3[m HEAD@{17}: commit: create header component
+[33me5d13f3[m HEAD@{18}: commit: create pages and routes
+[33md5c25f5[m HEAD@{19}: commit: tailwind setup
+[33m575d6d7[m HEAD@{20}: commit (initial): initial commit
