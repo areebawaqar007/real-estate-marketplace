@@ -7,14 +7,16 @@ export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('searchTerm', searchTerm);
-    const searchQuery = urlParams.toString();
-    navigate(`/search?${searchQuery}`);
-  };
 
+ const handleSubmit = (e) => { 
+  e.preventDefault(); // Prevents page refresh
+  const urlParams = new URLSearchParams(window.location.search); // Gets URL query parameters
+  urlParams.set('searchTerm', searchTerm); // Adds/updates the search term
+  const searchQuery = urlParams.toString(); // Converts parameters to a string
+  navigate(`/search?${searchQuery}`); // Navigates to the search page
+};
+
+  // When the URL changes, look inside the URL for searchTerm. If one exists, put its value into our React searchTerm state
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get('searchTerm');
@@ -22,6 +24,7 @@ export default function Header() {
       setSearchTerm(searchTermFromUrl);
     }
   }, [location.search]);
+  
   return (
     <header className='bg-slate-200 shadow-md'>
       <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
