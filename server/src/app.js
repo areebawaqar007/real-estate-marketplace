@@ -62,6 +62,11 @@ app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listingRouter);
 
+app.get("/api/test", (req, res) => {
+  res.json({
+    message: "Backend is working!",
+  });
+});
 // Error handler
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
