@@ -1,6 +1,8 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function UpdateListing() {
   const { currentUser } = useSelector((state) => state.user);
@@ -26,37 +28,44 @@ export default function UpdateListing() {
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false);
-      const params = useParams();
+  const [loading, setLoading] = useState(false);
+  const params = useParams();
 
   console.log(formData);
+
   useEffect(() => {
     const fetchListing = async () => {
       const listingId = params.listingId;
-      const res = await fetch(`/api/listing/get/${listingId}`);
+      const res = await fetch(`${API_URL}/api/listing/get/${listingId}`);
       const data = await res.json();
+
       if (data.success === false) {
         console.log(data.message);
         return;
       }
+
       setFormData(data);
     };
 
     fetchListing();
   }, []);
+
   // Upload one image to Cloudinary
   const storeImage = async (file) => {
     const data = new FormData();
 
     data.append("file", file);
-    data.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    data.append(
+      "upload_preset",
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+    );
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
         method: "POST",
         body: data,
-      },
+      }
     );
 
     const result = await res.json();
@@ -91,7 +100,7 @@ export default function UpdateListing() {
         setImageUploadError(false);
       } catch (error) {
         setImageUploadError(
-          "Image upload failed. Make sure each image is under 2 MB.",
+          "Image upload failed. Make sure each image is under 2 MB."
         );
       } finally {
         setUploading(false);
@@ -142,7 +151,7 @@ export default function UpdateListing() {
     }
   };
 
-  // Create listing
+  // Update listing
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -158,17 +167,20 @@ export default function UpdateListing() {
       setLoading(true);
       setError(false);
 
-      const res = await fetch(`/api/listing/update/${params.listingId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          ...formData,
-          userRef: currentUser._id,
-        }),
-      });
+      const res = await fetch(
+        `${API_URL}/api/listing/update/${params.listingId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            ...formData,
+            userRef: currentUser._id,
+          }),
+        }
+      );
 
       const data = await res.json();
 

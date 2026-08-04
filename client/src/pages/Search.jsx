@@ -1,6 +1,9 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ListingItem from '../components/ListingItem';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Search() {
   const navigate = useNavigate();
@@ -63,7 +66,7 @@ export default function Search() {
       const searchQuery = urlParams.toString();
 
       // Send filters to backend
-      const res = await fetch(`/api/listing/get?${searchQuery}`);
+      const res = await fetch(`${API_URL}/api/listing/get?${searchQuery}`);
       const data = await res.json();
 
       // Show "Show More" if 9 listings were returned
@@ -148,7 +151,7 @@ export default function Search() {
 
     const searchQuery = urlParams.toString();
 
-    const res = await fetch(`/api/listing/get?${searchQuery}`);
+    const res = await fetch(`${API_URL}/api/listing/get?${searchQuery}`);
     const data = await res.json();
 
     // Hide Show More if fewer than 9 listings are returned
