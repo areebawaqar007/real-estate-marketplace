@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Search() {
   const navigate = useNavigate();
+
+  // Stores all search/filter options
   const [sidebardata, setSidebardata] = useState({
     searchTerm: '',
     type: 'all',
@@ -18,8 +20,11 @@ export default function Search() {
   const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
 
+  // Read filters from URL and fetch listings
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
+
+    // Get filter values from URL
     const searchTermFromUrl = urlParams.get('searchTerm');
     const typeFromUrl = urlParams.get('type');
     const parkingFromUrl = urlParams.get('parking');
@@ -28,6 +33,7 @@ export default function Search() {
     const sortFromUrl = urlParams.get('sort');
     const orderFromUrl = urlParams.get('order');
 
+    // Update sidebar state with URL values
     if (
       searchTermFromUrl ||
       typeFromUrl ||
@@ -48,17 +54,25 @@ export default function Search() {
       });
     }
 
+    // Fetch matching listings from backend
     const fetchListings = async () => {
       setLoading(true);
       setShowMore(false);
+
+      // Convert URL parameters into a query string
       const searchQuery = urlParams.toString();
+
+      // Send filters to backend
       const res = await fetch(`/api/listing/get?${searchQuery}`);
       const data = await res.json();
+
+      // Show "Show More" if 9 listings were returned
       if (data.length > 8) {
         setShowMore(true);
       } else {
         setShowMore(false);
       }
+
       setListings(data);
       setLoading(false);
     };
@@ -66,6 +80,7 @@ export default function Search() {
     fetchListings();
   }, [location.search]);
 
+  // Update filter state when user changes an input
   const handleChange = (e) => {
     if (
       e.target.id === 'all' ||
@@ -91,18 +106,21 @@ export default function Search() {
       });
     }
 
+    // Get sorting field and order
     if (e.target.id === 'sort_order') {
       const sort = e.target.value.split('_')[0] || 'created_at';
-
       const order = e.target.value.split('_')[1] || 'desc';
 
       setSidebardata({ ...sidebardata, sort, order });
     }
   };
 
+  // Put filters into URL and navigate to search page
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const urlParams = new URLSearchParams();
+
     urlParams.set('searchTerm', sidebardata.searchTerm);
     urlParams.set('type', sidebardata.type);
     urlParams.set('parking', sidebardata.parking);
@@ -110,27 +128,44 @@ export default function Search() {
     urlParams.set('offer', sidebardata.offer);
     urlParams.set('sort', sidebardata.sort);
     urlParams.set('order', sidebardata.order);
+
     const searchQuery = urlParams.toString();
+
     navigate(`/search?${searchQuery}`);
   };
 
+  // Fetch the next batch of listings
   const onShowMoreClick = async () => {
     const numberOfListings = listings.length;
+
+    // Start from the number of listings already displayed
     const startIndex = numberOfListings;
+
     const urlParams = new URLSearchParams(location.search);
+
+    // Tell backend where to start fetching
     urlParams.set('startIndex', startIndex);
+
     const searchQuery = urlParams.toString();
+
     const res = await fetch(`/api/listing/get?${searchQuery}`);
     const data = await res.json();
+
+    // Hide Show More if fewer than 9 listings are returned
     if (data.length < 9) {
       setShowMore(false);
     }
+
+    // Add new listings to existing listings
     setListings([...listings, ...data]);
   };
+
   return (
     <div className='flex flex-col md:flex-row'>
-      <div className='p-7  border-b-2 md:border-r-2 md:min-h-screen'>
+      <div className='p-7 border-b-2 md:border-r-2 md:min-h-screen'>
         <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
+          
+          {/* Search term */}
           <div className='flex items-center gap-2'>
             <label className='whitespace-nowrap font-semibold'>
               Search Term:
@@ -144,8 +179,11 @@ export default function Search() {
               onChange={handleChange}
             />
           </div>
+
+          {/* Listing type and offer filters */}
           <div className='flex gap-2 flex-wrap items-center'>
             <label className='font-semibold'>Type:</label>
+
             <div className='flex gap-2'>
               <input
                 type='checkbox'
@@ -156,6 +194,7 @@ export default function Search() {
               />
               <span>Rent & Sale</span>
             </div>
+
             <div className='flex gap-2'>
               <input
                 type='checkbox'
@@ -166,6 +205,7 @@ export default function Search() {
               />
               <span>Rent</span>
             </div>
+
             <div className='flex gap-2'>
               <input
                 type='checkbox'
@@ -176,6 +216,7 @@ export default function Search() {
               />
               <span>Sale</span>
             </div>
+
             <div className='flex gap-2'>
               <input
                 type='checkbox'
@@ -187,8 +228,11 @@ export default function Search() {
               <span>Offer</span>
             </div>
           </div>
+
+          {/* Amenities filters */}
           <div className='flex gap-2 flex-wrap items-center'>
             <label className='font-semibold'>Amenities:</label>
+
             <div className='flex gap-2'>
               <input
                 type='checkbox'
@@ -199,6 +243,7 @@ export default function Search() {
               />
               <span>Parking</span>
             </div>
+
             <div className='flex gap-2'>
               <input
                 type='checkbox'
@@ -210,8 +255,11 @@ export default function Search() {
               <span>Furnished</span>
             </div>
           </div>
+
+          {/* Sorting */}
           <div className='flex items-center gap-2'>
             <label className='font-semibold'>Sort:</label>
+
             <select
               onChange={handleChange}
               defaultValue={'created_at_desc'}
@@ -224,31 +272,39 @@ export default function Search() {
               <option value='createdAt_asc'>Oldest</option>
             </select>
           </div>
+
           <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95'>
             Search
           </button>
         </form>
       </div>
+
       <div className='flex-1'>
         <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>
           Listing results:
         </h1>
+
         <div className='p-7 flex flex-wrap gap-4'>
+          {/* Show message when no listings exist */}
           {!loading && listings.length === 0 && (
             <p className='text-xl text-slate-700'>No listing found!</p>
           )}
+
+          {/* Show loading message */}
           {loading && (
             <p className='text-xl text-slate-700 text-center w-full'>
               Loading...
             </p>
           )}
 
+          {/* Display listings */}
           {!loading &&
             listings &&
             listings.map((listing) => (
               <ListingItem key={listing._id} listing={listing} />
             ))}
 
+          {/* Show button when more listings are available */}
           {showMore && (
             <button
               onClick={onShowMoreClick}
