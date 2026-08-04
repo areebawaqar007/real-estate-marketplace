@@ -127,6 +127,7 @@ export default function Profile() {
         {
           method: "GET",
           credentials: "include",
+          cache: "no-store",
         },
       );
       const data = await res.json();
