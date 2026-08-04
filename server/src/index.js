@@ -1,3 +1,4 @@
+// // for local development
 // import dotenv from "dotenv";
 // import connectDB from "./config/database.js";
 // import path from 'path';
@@ -39,3 +40,5 @@ dotenv.config();
 connectDB();
 
 export default app;
+
+

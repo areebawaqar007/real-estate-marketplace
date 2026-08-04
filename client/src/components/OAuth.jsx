@@ -12,16 +12,19 @@ export default function OAuth() {
 
   const handleGoogleClick = async () => {
     try {
+      // Google authentication
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
 
       const result = await signInWithPopup(auth, provider);
 
+      // Send Google user information to your backend
       const res = await fetch(`${API_URL}/api/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name: result.user.displayName,
           email: result.user.email,
@@ -30,10 +33,15 @@ export default function OAuth() {
       });
 
       const data = await res.json();
+
+      if (!res.ok || data.success === false) {
+        throw new Error(data.message || "Google sign-in failed");
+      }
+
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      console.log("could not sign in with google", error);
+      console.error("Could not sign in with Google:", error);
     }
   };
 
@@ -43,7 +51,7 @@ export default function OAuth() {
       type="button"
       className="bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95"
     >
-      Continue with google
+      Continue with Google
     </button>
   );
 }
