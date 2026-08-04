@@ -34,25 +34,8 @@ import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import app from "./app.js";
 
-// Load environment variables
-dotenv.config({
-  path: "./server/.env",
-});
+dotenv.config();
 
-const startServer = async () => {
-  try {
-    // Connect to MongoDB
-    await connectDB();
+connectDB();
 
-    // Start server
-    const PORT = process.env.PORT || 3000;
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.log("Server failed to start:", error);
-  }
-};
-
-startServer();
+export default app;
