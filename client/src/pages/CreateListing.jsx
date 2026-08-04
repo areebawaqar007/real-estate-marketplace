@@ -16,7 +16,7 @@ export default function CreateListing() {
     type: "rent",
     bedrooms: 1,
     bathrooms: 1,
-    regularPrice: 50,
+    regularPrice:"" ,
     discountPrice: 0,
     offer: false,
     parking: false,
@@ -301,8 +301,6 @@ export default function CreateListing() {
               <input
                 type="number"
                 id="regularPrice"
-                min="2000"
-                max="10000000"
                 required
                 className="p-3 border border-gray-300 rounded-lg"
                 onChange={handleChange}
@@ -313,7 +311,7 @@ export default function CreateListing() {
                 <p>Regular price</p>
 
                 {formData.type === "rent" && (
-                  <span className="text-xs">($ / month)</span>
+                  <span className="text-xs">(pkr / month)</span>
                 )}
               </div>
             </div>
@@ -323,8 +321,7 @@ export default function CreateListing() {
                 <input
                   type="number"
                   id="discountPrice"
-                  min="0"
-                  max="10000000"
+                
                   required
                   className="p-3 border border-gray-300 rounded-lg"
                   onChange={handleChange}
@@ -335,7 +332,7 @@ export default function CreateListing() {
                   <p>Discounted price</p>
 
                   {formData.type === "rent" && (
-                    <span className="text-xs">($ / month)</span>
+                    <span className="text-xs">(pkr / month)</span>
                   )}
                 </div>
               </div>
