@@ -125,7 +125,6 @@ export default function Profile() {
       const res = await fetch(
         `${API_URL}/api/user/listings/${currentUser._id}`,
         {
-          method: "GET",
           credentials: "include",
           cache: "no-store",
         },
