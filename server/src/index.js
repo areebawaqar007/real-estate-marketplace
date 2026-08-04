@@ -1,26 +1,55 @@
+// import dotenv from "dotenv";
+// import connectDB from "./config/database.js";
+// import path from 'path';
+// import app from "./app.js";
+// // Load env variables
+// dotenv.config({
+//   path: "./server/.env",
+// });
+// const startServer = async () => {
+//   try {
+//     await connectDB();
+
+//     app.on("error", (error) => {
+//       console.log("ERROR:", error);
+//       throw error;
+//     });
+
+//     const PORT = process.env.PORT || 3000;
+
+//     app.listen(PORT, () => {
+//       console.log(`Server running on port ${PORT}`);
+//     });
+//   } catch (error) {
+//     console.log("Server failed to start:", error);
+//   }
+// };
+//   const __dirname = path.resolve();
+
+
+// startServer();
+
+
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
-
 import app from "./app.js";
-// Load env variables
+
+// Load environment variables
 dotenv.config({
   path: "./server/.env",
 });
+
 const startServer = async () => {
   try {
+    // Connect to MongoDB
     await connectDB();
 
-    app.on("error", (error) => {
-      console.log("ERROR:", error);
-      throw error;
-    });
-
+    // Start server
     const PORT = process.env.PORT || 3000;
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-
   } catch (error) {
     console.log("Server failed to start:", error);
   }
