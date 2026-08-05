@@ -7,6 +7,7 @@ The project was built to gain practical experience with React, Node.js, Express,
 ## Live Demo
 
 https://nestora-pink.vercel.app
+
 ## Features
 
 ### User Authentication
@@ -92,39 +93,106 @@ The frontend is built with React and Tailwind CSS and is designed to work across
 
 ## Project Structure
 
-
-
+```text
+Nestora/
+├── client/
+│   ├── dist/
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── assets/
+│   │   │   └── default_house.jpeg
+│   │   ├── components/
+│   │   │   ├── Header.jsx
+│   │   │   ├── ListingItem.jsx
+│   │   │   ├── OAuth.jsx
+│   │   │   └── PrivateRoute.jsx
+│   │   ├── firebase.js
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   ├── pages/
+│   │   │   ├── About.jsx
+│   │   │   ├── CreateListing.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Listing.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── Search.jsx
+│   │   │   ├── SignIn.jsx
+│   │   │   ├── SignUp.jsx
+│   │   │   └── UpdateListing.jsx
+│   │   └── redux/
+│   │       ├── store.js
+│   │       └── user/
+│   │           └── userSlice.js
+│   └── vite.config.js
+├── package.json
+├── package-lock.json
+├── server/
+│   └── src/
+│       ├── app.js
+│       ├── config/
+│       │   └── database.js
+│       ├── controllers/
+│       │   ├── auth.controller.js
+│       │   ├── listing.controller.js
+│       │   └── user.controller.js
+│       ├── index.js
+│       ├── models/
+│       │   ├── listing.model.js
+│       │   └── user.model.js
+│       ├── routes/
+│       │   ├── auth.route.js
+│       │   ├── listing.route.js
+│       │   └── user.route.js
+│       └── Utils/
+│           ├── error.js
+│           └── verifyUser.js
+└── vercel.json
+```
 
 ## API Routes
 
-Some of the main API routes include:
+### Authentication
 
 ```text
-Authentication
-
 POST /api/auth/signup
 POST /api/auth/signin
 POST /api/auth/google
 GET  /api/auth/signout
 ```
 
-```text
-User
+### User
 
+```text
 POST   /api/user/update/:id
 DELETE /api/user/delete/:id
 GET    /api/user/listings/:id
 ```
 
-```text
-Listings
+### Listings
 
+```text
 POST   /api/listing/create
 GET    /api/listing/get/:id
 POST   /api/listing/update/:id
 DELETE /api/listing/delete/:id
 GET    /api/listing/search
 ```
+
+## Deployment
+
+The Nestora frontend and backend are deployed using Vercel.
+
+The application uses environment variables for sensitive configuration such as:
+
+* MongoDB connection string
+* JWT secret
+* Cloudinary credentials
+* Firebase configuration
+* Frontend API URL
 
 ## Future Improvements
 
