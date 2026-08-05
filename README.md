@@ -53,6 +53,68 @@ Nestora follows a client server architecture where the React frontend communicat
              └─────────┘  └──────────┘  └───────────┘
 ```
 
+## Project Structure
+
+```text
+Nestora/
+├── client/
+│   ├── dist/
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── assets/
+│   │   │   └── default_house.jpeg
+│   │   ├── components/
+│   │   │   ├── Header.jsx
+│   │   │   ├── ListingItem.jsx
+│   │   │   ├── OAuth.jsx
+│   │   │   └── PrivateRoute.jsx
+│   │   ├── firebase.js
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   ├── pages/
+│   │   │   ├── About.jsx
+│   │   │   ├── CreateListing.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Listing.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── Search.jsx
+│   │   │   ├── SignIn.jsx
+│   │   │   ├── SignUp.jsx
+│   │   │   └── UpdateListing.jsx
+│   │   └── redux/
+│   │       ├── store.js
+│   │       └── user/
+│   │           └── userSlice.js
+│   └── vite.config.js
+├── package.json
+├── package-lock.json
+├── server/
+│   └── src/
+│       ├── app.js
+│       ├── config/
+│       │   └── database.js
+│       ├── controllers/
+│       │   ├── auth.controller.js
+│       │   ├── listing.controller.js
+│       │   └── user.controller.js
+│       ├── index.js
+│       ├── models/
+│       │   ├── listing.model.js
+│       │   └── user.model.js
+│       ├── routes/
+│       │   ├── auth.route.js
+│       │   ├── listing.route.js
+│       │   └── user.route.js
+│       └── Utils/
+│           ├── error.js
+│           └── verifyUser.js
+└── vercel.json
+```
+
 ## Features
 
 ### User Authentication
@@ -131,68 +193,6 @@ MongoDB
 
 This keeps image files out of the MongoDB database and stores only their URLs with the relevant listing data.
 
-## Project Structure
-
-```text
-Nestora/
-├── client/
-│   ├── dist/
-│   ├── index.html
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── public/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── assets/
-│   │   │   └── default_house.jpeg
-│   │   ├── components/
-│   │   │   ├── Header.jsx
-│   │   │   ├── ListingItem.jsx
-│   │   │   ├── OAuth.jsx
-│   │   │   └── PrivateRoute.jsx
-│   │   ├── firebase.js
-│   │   ├── index.css
-│   │   ├── main.jsx
-│   │   ├── pages/
-│   │   │   ├── About.jsx
-│   │   │   ├── CreateListing.jsx
-│   │   │   ├── Home.jsx
-│   │   │   ├── Listing.jsx
-│   │   │   ├── Profile.jsx
-│   │   │   ├── Search.jsx
-│   │   │   ├── SignIn.jsx
-│   │   │   ├── SignUp.jsx
-│   │   │   └── UpdateListing.jsx
-│   │   └── redux/
-│   │       ├── store.js
-│   │       └── user/
-│   │           └── userSlice.js
-│   └── vite.config.js
-├── package.json
-├── package-lock.json
-├── server/
-│   └── src/
-│       ├── app.js
-│       ├── config/
-│       │   └── database.js
-│       ├── controllers/
-│       │   ├── auth.controller.js
-│       │   ├── listing.controller.js
-│       │   └── user.controller.js
-│       ├── index.js
-│       ├── models/
-│       │   ├── listing.model.js
-│       │   └── user.model.js
-│       ├── routes/
-│       │   ├── auth.route.js
-│       │   ├── listing.route.js
-│       │   └── user.route.js
-│       └── Utils/
-│           ├── error.js
-│           └── verifyUser.js
-└── vercel.json
-```
-
 ## API Routes
 
 ### Authentication
@@ -221,6 +221,18 @@ POST   /api/listing/update/:id
 DELETE /api/listing/delete/:id
 GET    /api/listing/search
 ```
+
+## Challenges & Solutions
+
+| Challenge                                                                       | Solution                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cookies were not working after deploying the frontend and backend separately    | I configured CORS to allow credentials and updated the cookie settings with `secure: true` and `sameSite: "none"` for the deployed application.                                              |
+| User listings stopped showing after deployment                                  | I checked the authentication cookie, API requests, CORS settings, and protected listing route. I also cleared the browser data and checked the request again.                                |
+| Google OAuth was not working on the deployed website                            | Firebase was rejecting my Vercel domain, so I added my deployed frontend domain to Firebase Authentication's authorized domains.                                                             |
+| Firebase image storage was not suitable for my project                          | I switched to Cloudinary for image handling and implemented multiple image uploads with a maximum of six images per listing.                                                                 |
+| Authentication state was getting difficult to manage across pages               | I used Redux Toolkit and Redux Persist to manage and maintain the logged in user's state across the application.                                                                             |
+| Frontend and backend were deployed separately but were not integrating properly | I found issues with the client side and server side URLs and fixed the API URL and environment variable configuration so the frontend could communicate with the deployed backend correctly. |
+| CORS issues occurred between the frontend and backend                           | I configured the backend CORS settings with the correct frontend URL and enabled credentials so requests could be made successfully between both deployments.                                |
 
 ## Deployment
 
@@ -252,7 +264,6 @@ nestora2.vercel.app
 
 The GitHub repository is connected to Vercel for continuous deployment. Changes pushed to the configured GitHub branch can automatically trigger a new build and deployment.
 
-
 ## Future Improvements
 
 Some features I would like to add in the future include:
@@ -265,7 +276,10 @@ Some features I would like to add in the future include:
 * Admin dashboard
 * More advanced search filters
 
+## Conclusion
+
+Nestora gave me practical experience building and deploying a complete MERN stack application. It helped me strengthen my understanding of authentication, REST APIs, MongoDB, image handling, state management, and solving real deployment and integration issues.
+
 ## Author
 
 ### Areeba Waqar
-
