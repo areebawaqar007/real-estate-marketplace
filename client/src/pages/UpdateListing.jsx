@@ -7,6 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function UpdateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const params = useParams();
 
   const [files, setFiles] = useState([]);
 
@@ -18,39 +19,55 @@ export default function UpdateListing() {
     type: "rent",
     bedrooms: 1,
     bathrooms: 1,
-    regularPrice: 50,
+    regularPrice: 2000,
     discountPrice: 0,
     offer: false,
     parking: false,
     furnished: false,
+    phone: "",
+    email: "",
   });
 
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const params = useParams();
 
-  console.log(formData);
-
+  // =========================
+  // FETCH EXISTING LISTING
+  // =========================
   useEffect(() => {
     const fetchListing = async () => {
-      const listingId = params.listingId;
-      const res = await fetch(`${API_URL}/api/listing/get/${listingId}`);
-      const data = await res.json();
+      try {
+        const listingId = params.listingId;
 
-      if (data.success === false) {
-        console.log(data.message);
-        return;
+        const res = await fetch(
+          `${API_URL}/api/listing/get/${listingId}`
+        );
+
+        const data = await res.json();
+
+        if (data.success === false) {
+          console.log(data.message);
+          return;
+        }
+
+        setFormData({
+          ...data,
+          phone: data.phone || "",
+          email: data.email || "",
+        });
+      } catch (error) {
+        console.log(error.message);
       }
-
-      setFormData(data);
     };
 
     fetchListing();
-  }, []);
+  }, [params.listingId]);
 
-  // Upload one image to Cloudinary
+  // =========================
+  // UPLOAD IMAGE TO CLOUDINARY
+  // =========================
   const storeImage = async (file) => {
     const data = new FormData();
 
@@ -61,7 +78,9 @@ export default function UpdateListing() {
     );
 
     const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${
+        import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+      }/image/upload`,
       {
         method: "POST",
         body: data,
@@ -77,9 +96,14 @@ export default function UpdateListing() {
     return result.secure_url;
   };
 
-  // Upload selected images
+  // =========================
+  // UPLOAD SELECTED IMAGES
+  // =========================
   const handleImageSubmit = async () => {
-    if (files.length > 0 && files.length + formData.imageUrls.length <= 6) {
+    if (
+      files.length > 0 &&
+      files.length + formData.imageUrls.length <= 6
+    ) {
       setUploading(true);
       setImageUploadError(false);
 
@@ -106,12 +130,16 @@ export default function UpdateListing() {
         setUploading(false);
       }
     } else {
-      setImageUploadError("You can only upload 6 images per listing");
+      setImageUploadError(
+        "You can only upload 6 images per listing"
+      );
       setUploading(false);
     }
   };
 
-  // Remove image
+  // =========================
+  // REMOVE IMAGE
+  // =========================
   const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
@@ -119,49 +147,58 @@ export default function UpdateListing() {
     });
   };
 
-  // Handle form inputs
+  // =========================
+  // HANDLE FORM INPUTS
+  // =========================
   const handleChange = (e) => {
-    if (e.target.id === "sale" || e.target.id === "rent") {
+    const { id, value, type, checked } = e.target;
+
+    // Rent / Sale
+    if (id === "sale" || id === "rent") {
       setFormData({
         ...formData,
-        type: e.target.id,
+        type: id,
       });
+      return;
     }
 
+    // Checkboxes
     if (
-      e.target.id === "parking" ||
-      e.target.id === "furnished" ||
-      e.target.id === "offer"
+      id === "parking" ||
+      id === "furnished" ||
+      id === "offer"
     ) {
       setFormData({
         ...formData,
-        [e.target.id]: e.target.checked,
+        [id]: checked,
       });
+      return;
     }
 
-    if (
-      e.target.type === "number" ||
-      e.target.type === "text" ||
-      e.target.type === "textarea"
-    ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.value,
-      });
-    }
+    // Text, number, email, telephone, textarea
+    setFormData({
+      ...formData,
+      [id]: value,
+    });
   };
 
-  // Update listing
+  // =========================
+  // UPDATE LISTING
+  // =========================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       if (formData.imageUrls.length < 1) {
-        return setError("You must upload at least one image");
+        return setError(
+          "You must upload at least one image"
+        );
       }
 
       if (+formData.regularPrice < +formData.discountPrice) {
-        return setError("Discount price must be lower than regular price");
+        return setError(
+          "Discount price must be lower than regular price"
+        );
       }
 
       setLoading(true);
@@ -204,7 +241,13 @@ export default function UpdateListing() {
         Update a Listing
       </h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col sm:flex-row gap-4"
+      >
+        {/* =========================
+            LEFT SIDE
+        ========================= */}
         <div className="flex flex-col gap-4 flex-1">
           <input
             type="text"
@@ -237,6 +280,7 @@ export default function UpdateListing() {
             value={formData.address}
           />
 
+          {/* PROPERTY OPTIONS */}
           <div className="flex gap-6 flex-wrap">
             <div className="flex gap-2">
               <input
@@ -294,6 +338,9 @@ export default function UpdateListing() {
             </div>
           </div>
 
+          {/* =========================
+              BEDS / BATHS / PRICES
+          ========================= */}
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
               <input
@@ -338,9 +385,9 @@ export default function UpdateListing() {
               <div className="flex flex-col items-center">
                 <p>Regular price</p>
 
-                {formData.type === "rent" && (
-                  <span className="text-xs">($ / month)</span>
-                )}
+                <span className="text-xs">
+                  PKR {formData.type === "rent" ? "/ month" : ""}
+                </span>
               </div>
             </div>
 
@@ -360,15 +407,54 @@ export default function UpdateListing() {
                 <div className="flex flex-col items-center">
                   <p>Discounted price</p>
 
-                  {formData.type === "rent" && (
-                    <span className="text-xs">($ / month)</span>
-                  )}
+                  <span className="text-xs">
+                    PKR {formData.type === "rent" ? "/ month" : ""}
+                  </span>
                 </div>
               </div>
             )}
           </div>
+
+          {/* =========================
+              CONTACT INFORMATION
+          ========================= */}
+          <div className="border rounded-lg p-4 mt-2">
+            <h2 className="text-lg font-semibold mb-3">
+              Contact Information
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-3">
+              Update your contact details so interested buyers or
+              tenants can reach you.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <input
+                type="tel"
+                id="phone"
+                placeholder="Phone number"
+                className="border p-3 rounded-lg"
+                required
+                onChange={handleChange}
+                value={formData.phone}
+              />
+
+              <input
+                type="email"
+                id="email"
+                placeholder="Email address"
+                className="border p-3 rounded-lg"
+                required
+                onChange={handleChange}
+                value={formData.email}
+              />
+            </div>
+          </div>
         </div>
 
+        {/* =========================
+            RIGHT SIDE
+        ========================= */}
         <div className="flex flex-col flex-1 gap-4">
           <p className="font-semibold">
             Images:
@@ -401,6 +487,7 @@ export default function UpdateListing() {
             {imageUploadError && imageUploadError}
           </p>
 
+          {/* UPLOADED IMAGES */}
           {formData.imageUrls.length > 0 &&
             formData.imageUrls.map((url, index) => (
               <div
@@ -423,16 +510,22 @@ export default function UpdateListing() {
               </div>
             ))}
 
+          {/* UPDATE BUTTON */}
           <button
             disabled={loading || uploading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
-            {loading ? "Creating..." : "Update listing"}
+            {loading ? "Updating..." : "Update listing"}
           </button>
 
-          {error && <p className="text-red-700 text-sm">{error}</p>}
+          {error && (
+            <p className="text-red-700 text-sm">
+              {error}
+            </p>
+          )}
         </div>
       </form>
     </main>
   );
 }
+

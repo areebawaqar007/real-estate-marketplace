@@ -18,11 +18,13 @@ export default function CreateListing() {
     type: "rent",
     bedrooms: 1,
     bathrooms: 1,
-    regularPrice:"" ,
+    regularPrice: "",
     discountPrice: 0,
     offer: false,
     parking: false,
     furnished: false,
+    phone: "",
+    email: "",
   });
 
   const [imageUploadError, setImageUploadError] = useState(false);
@@ -30,21 +32,26 @@ export default function CreateListing() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  console.log(formData);
-
-  // Upload one image to Cloudinary
+  // =========================
+  // UPLOAD IMAGE TO CLOUDINARY
+  // =========================
   const storeImage = async (file) => {
     const data = new FormData();
 
     data.append("file", file);
-    data.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    data.append(
+      "upload_preset",
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+    );
 
     const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${
+        import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+      }/image/upload`,
       {
         method: "POST",
         body: data,
-      },
+      }
     );
 
     const result = await res.json();
@@ -56,7 +63,9 @@ export default function CreateListing() {
     return result.secure_url;
   };
 
-  // Upload selected images
+  // =========================
+  // UPLOAD SELECTED IMAGES
+  // =========================
   const handleImageSubmit = async () => {
     if (files.length > 0 && files.length + formData.imageUrls.length <= 6) {
       setUploading(true);
@@ -79,7 +88,7 @@ export default function CreateListing() {
         setImageUploadError(false);
       } catch (error) {
         setImageUploadError(
-          "Image upload failed. Make sure each image is under 2 MB.",
+          "Image upload failed. Make sure each image is under 2 MB."
         );
       } finally {
         setUploading(false);
@@ -90,7 +99,9 @@ export default function CreateListing() {
     }
   };
 
-  // Remove image
+  // =========================
+  // REMOVE IMAGE
+  // =========================
   const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
@@ -98,39 +109,44 @@ export default function CreateListing() {
     });
   };
 
-  // Handle form inputs
+  // =========================
+  // HANDLE FORM INPUTS
+  // =========================
   const handleChange = (e) => {
-    if (e.target.id === "sale" || e.target.id === "rent") {
+    const { id, value, type, checked } = e.target;
+
+    // Rent / Sale
+    if (id === "sale" || id === "rent") {
       setFormData({
         ...formData,
-        type: e.target.id,
+        type: id,
       });
+      return;
     }
 
+    // Checkboxes
     if (
-      e.target.id === "parking" ||
-      e.target.id === "furnished" ||
-      e.target.id === "offer"
+      id === "parking" ||
+      id === "furnished" ||
+      id === "offer"
     ) {
       setFormData({
         ...formData,
-        [e.target.id]: e.target.checked,
+        [id]: checked,
       });
+      return;
     }
 
-    if (
-      e.target.type === "number" ||
-      e.target.type === "text" ||
-      e.target.type === "textarea"
-    ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.value,
-      });
-    }
+    // Text, number, email, telephone, etc.
+    setFormData({
+      ...formData,
+      [id]: value,
+    });
   };
 
-  // Create listing
+  // =========================
+  // CREATE LISTING
+  // =========================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -140,7 +156,9 @@ export default function CreateListing() {
       }
 
       if (+formData.regularPrice < +formData.discountPrice) {
-        return setError("Discount price must be lower than regular price");
+        return setError(
+          "Discount price must be lower than regular price"
+        );
       }
 
       setLoading(true);
@@ -180,7 +198,13 @@ export default function CreateListing() {
         Create a Listing
       </h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col sm:flex-row gap-4"
+      >
+        {/* =========================
+            LEFT SIDE
+        ========================= */}
         <div className="flex flex-col gap-4 flex-1">
           <input
             type="text"
@@ -213,6 +237,7 @@ export default function CreateListing() {
             value={formData.address}
           />
 
+          {/* PROPERTY OPTIONS */}
           <div className="flex gap-6 flex-wrap">
             <div className="flex gap-2">
               <input
@@ -270,6 +295,7 @@ export default function CreateListing() {
             </div>
           </div>
 
+          {/* BEDROOMS / BATHROOMS / PRICE */}
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
               <input
@@ -304,6 +330,7 @@ export default function CreateListing() {
                 type="number"
                 id="regularPrice"
                 required
+                min="0"
                 className="p-3 border border-gray-300 rounded-lg"
                 onChange={handleChange}
                 value={formData.regularPrice}
@@ -312,9 +339,9 @@ export default function CreateListing() {
               <div className="flex flex-col items-center">
                 <p>Regular price</p>
 
-                {formData.type === "rent" && (
-                  <span className="text-xs">(pkr / month)</span>
-                )}
+                <span className="text-xs">
+                  PKR {formData.type === "rent" ? "/ month" : ""}
+                </span>
               </div>
             </div>
 
@@ -323,8 +350,8 @@ export default function CreateListing() {
                 <input
                   type="number"
                   id="discountPrice"
-                
                   required
+                  min="0"
                   className="p-3 border border-gray-300 rounded-lg"
                   onChange={handleChange}
                   value={formData.discountPrice}
@@ -333,15 +360,54 @@ export default function CreateListing() {
                 <div className="flex flex-col items-center">
                   <p>Discounted price</p>
 
-                  {formData.type === "rent" && (
-                    <span className="text-xs">(pkr / month)</span>
-                  )}
+                  <span className="text-xs">
+                    PKR {formData.type === "rent" ? "/ month" : ""}
+                  </span>
                 </div>
               </div>
             )}
           </div>
+
+          {/* =========================
+              CONTACT INFORMATION
+          ========================= */}
+          <div className="border rounded-lg p-4 mt-2">
+            <h2 className="text-lg font-semibold mb-3">
+              Contact Information
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-3">
+              Add contact details so interested buyers or tenants can reach
+              you.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <input
+                type="tel"
+                id="phone"
+                placeholder="Phone number"
+                className="border p-3 rounded-lg"
+                required
+                onChange={handleChange}
+                value={formData.phone}
+              />
+
+              <input
+                type="email"
+                id="email"
+                placeholder="Email address"
+                className="border p-3 rounded-lg"
+                required
+                onChange={handleChange}
+                value={formData.email}
+              />
+            </div>
+          </div>
         </div>
 
+        {/* =========================
+            RIGHT SIDE
+        ========================= */}
         <div className="flex flex-col flex-1 gap-4">
           <p className="font-semibold">
             Images:
@@ -374,6 +440,7 @@ export default function CreateListing() {
             {imageUploadError && imageUploadError}
           </p>
 
+          {/* UPLOADED IMAGES */}
           {formData.imageUrls.length > 0 &&
             formData.imageUrls.map((url, index) => (
               <div
@@ -396,6 +463,7 @@ export default function CreateListing() {
               </div>
             ))}
 
+          {/* CREATE BUTTON */}
           <button
             disabled={loading || uploading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
